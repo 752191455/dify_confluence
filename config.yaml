@@ -1,0 +1,103 @@
+confluence:
+  # 自建示例: http://localhost:8090 ；Cloud 示例: https://xxx.atlassian.net/wiki
+  base_url: "https://dingfj1.atlassian.net/wiki"
+  email: "dingfj1@gmail.com"
+  username: "dingfj1@gmail.com"
+  # Bearer Token（请求头 Authorization: Bearer <api_token>）
+  api_token: "ATATT3xFfGF0u8FEKTdpnIWuy38XoERVELOyaPaZ9K-PYn1Me8v5VMVX6cZcIaTVyc92kHXQtlrZfVKRA2WKpoj7iQiukcNob4QPoXuk-zf9Gr7nNhvUpug-oxi8a2ZVZ2ufu1LgnuQoH_AoE0CxTxlk_gtUdi4ICsQ0vwuF90IjporugU5SRbY=7852BBB1"
+  space_keys: [ "~71202002ad59ae459a461d932e3c87e617e7e5" ]           # 要同步的空间，空列表表示所有
+  include_comments: true
+  include_attachments: true
+  include_images: true
+  include_labels: true
+
+
+
+# 本地工作目录：附件下载、Confluence 同步、Dify 文件夹上传共用
+paths:
+  workspace: ./temp_confluence
+
+dify:
+  base_url: http://localhost
+  api_base_url: http://localhost  # API 根地址，代码会自动补 /v1
+  files_base_url: http://localhost  # Markdown 内图片/附件公开预览 URL 前缀
+  api_key: dataset-fEhi4Jsop4vSB2xObz8SngHB
+  dataset_id: d85d6ac5-cbfa-4cf2-8d4c-810c4f66f5c3
+
+  #markdown_file: "./document.md"
+
+  indexing_technique: high_quality
+  upload_delay_seconds: 1.0
+  upload_retry_attempts: 5
+
+  process_rule:
+    mode: custom
+    pre_processing_rules:
+      - id: remove_extra_spaces
+        enabled: true
+      - id: remove_urls_emails
+        enabled: false   # 保留 Markdown 中的图片/附件 URL
+    segmentation:
+      separator: "###"
+      max_tokens: 500
+
+upload:
+  # Dify 知识库 create-by-file 支持的扩展名（scheduler / dify_folder_upload 统一读取此处）
+  extensions:
+    # 文本与标记语言
+    - txt
+    - markdown
+    - md
+    - html
+    - htm
+    - csv
+    - xml
+    # Microsoft Office
+    - docx
+    - xlsx
+    - xls
+    - pptx
+    - ppt
+    # 其他
+    - pdf
+    - epub
+    - properties
+    - vtt
+    - mdx
+  # upload_all_extensions: true   # 设为 true 则不过滤扩展名（不推荐）
+  skip_dirs:
+    - .git
+    - .venv
+    - node_modules
+    - __pycache__
+
+
+sync:
+  interval_minutes: 60
+  request_delay_seconds: 0.3
+  spaces: ["~71202002ad59ae459a461d932e3c87e617e7e5"]
+  local_temp_dir: "./temp_confluence"
+
+# download_space_attachments.py 定时任务
+download_attachments:
+  enabled: true
+  interval_minutes: 60
+  # spaces 为空时使用 sync.spaces；仍为空则下载全部空间
+
+# dify_folder_upload.py 定时任务
+folder_upload:
+  enabled: true
+  interval_minutes: 60
+
+process_rule:
+  indexing_technique: "high_quality"
+  rules:
+    pre_processing_rules:
+      - id: "remove_extra_spaces"
+        enabled: true
+      - id: "remove_urls_emails"
+        enabled: false
+    segmentation:
+      separator: "###"
+      max_tokens: 500
+  mode: "custom"

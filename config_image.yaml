@@ -1,0 +1,27 @@
+
+dify:
+  api_base_url: http://localhost
+  api_key: dataset-fEhi4Jsop4vSB2xObz8SngHB
+  dataset_id: d85d6ac5-cbfa-4cf2-8d4c-810c4f66f5c3
+
+upload:
+  # 单张图片路径 或 图片文件夹路径（二选一，文件夹会递归扫描）
+  image_path: "./confluence_downloads"                        # 图片所在文件夹
+  # image_path: "./test.png"                    # 单张图片
+  recursive: true                               # 是否递归子文件夹（仅对文件夹有效）
+  keep_state: true                              # 是否启用去重（记录已上传文件名，避免重复上传）
+  state_file: "uploaded_images.json"            # 状态文件路径
+
+# 自定义处理规则（与 Dify API 完全一致）
+process_rule:
+  indexing_technique: "high_quality"
+  rules:
+    pre_processing_rules:
+      - id: "remove_extra_spaces"
+        enabled: true
+      - id: "remove_urls_emails"
+        enabled: true
+    segmentation:
+      separator: "###"
+      max_tokens: 500
+  mode: "custom"
